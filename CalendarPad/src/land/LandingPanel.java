@@ -3,8 +3,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
+
+import MyPackage.CalendarPad;
 
 public class LandingPanel extends JFrame{
 	
@@ -23,11 +24,11 @@ public class LandingPanel extends JFrame{
 	public LandingPanel(){
 		
 		//set the frame
-		setVisible(true);
 		setResizable(false);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(screenSize.width/3, screenSize.height* 10/25);
 		setLocation(screenSize.width/3, screenSize.height/4);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		//set the components
 		passField.setEchoChar('*');
@@ -67,6 +68,8 @@ public class LandingPanel extends JFrame{
 		this.add(cancleButton);
 		this.add(bglbl);
 		
+		setVisible(true);
+		
 		loadButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -80,11 +83,14 @@ public class LandingPanel extends JFrame{
 				}
 				else{
 					if(Validate.isValidate(username, userpass) == true){
-						JOptionPane.showMessageDialog(null, "登陆成功");
-						//***********************转向Calendar页面
+						//JOptionPane.showMessageDialog(null, "登陆成功");
+						setVisible(false);
+						CalendarPad.main(new String[]{});
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "登录失败");
+						
+						CalendarPad.main(new String[]{});
 					}
 				}
 				
@@ -100,6 +106,18 @@ public class LandingPanel extends JFrame{
 		});
 	}
 
-
+	public static void main ( String[] args )
+	{
+//		 设置外观
+		try {
+			UIManager.setLookAndFeel(new com.sun.java.swing.plaf.windows.WindowsLookAndFeel());
+//			String lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+//			UIManager.setLookAndFeel(lookAndFeel);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "加载 plaf 模式显示组件出错！", "错误",
+					JOptionPane.WARNING_MESSAGE);
+		}
+		new LandingPanel() ;
+	}
 	
 }

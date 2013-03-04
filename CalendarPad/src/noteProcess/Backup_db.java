@@ -46,6 +46,7 @@ public class Backup_db
 			ps.setByte(2, month);
 			ps.setByte(3, day);
 			ResultSet newid = ps.executeQuery();
+			// 数据库中没有该日的备忘，则直接添加
 			if (!newid.next())
 			{
 				SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -60,6 +61,7 @@ public class Backup_db
 				ps.setString(5, ddate);
 				ps.executeUpdate();
 			}
+			// 若数据库中已有当日备忘：
 			else
 			{
 				String contentWeb = newid.getString("content");
@@ -81,6 +83,7 @@ public class Backup_db
 				File file = new File(filename);
 				String dnow = sd.format(file.lastModified());
 				
+				// 若本地备忘较远端备忘新，并且两处的备忘内容不同，则上传本地备忘，并覆盖远端数据
 				if(dweb.compareTo(dnow) <= 0 && !content.equals(contentWeb))
 				{
 					//System.out.println(content+contentWeb+ddate);
@@ -93,6 +96,7 @@ public class Backup_db
 					ps.setByte(5, day);
 					ps.executeUpdate();
 				}
+				// 如果本地备忘较远端备忘新，但两处的备忘内容相同，则仅更新远端备忘的时间至当前时间
 				else if(dweb.compareTo(dnow) <= 0 && content.equals(contentWeb))
 				{
 					ps = c.prepareStatement(updateDate);
@@ -103,6 +107,7 @@ public class Backup_db
 					ps.setByte(4,day);
 					ps.executeUpdate();
 				}
+				// 如果本地备忘较远端备忘旧，则下载远端备忘覆盖本地的，并更新远端备忘时间至当前时间
 				else if(dweb.compareTo(dnow) > 0)
 				{
 					try
@@ -149,6 +154,11 @@ public class Backup_db
 		}
 	}
 	
+	/**
+	 * 从数据库读取某用户的全部备忘
+	 * @return
+	 * @throws SQLException
+	 */
 	public static ArrayList<Reminder> getReminder() throws SQLException
 	{
 		Connection c = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
@@ -182,6 +192,13 @@ public class Backup_db
 			}
 		}
 	}
+	/**
+	 * 删除数据库中的某条备忘
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @throws SQLException
+	 */
 	public static void deleteReminder(int year, byte month, byte day) throws SQLException
 	{
 		try 

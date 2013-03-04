@@ -110,8 +110,10 @@ public class CalendarPad
 					JOptionPane.WARNING_MESSAGE);
 		}
 		
+//		noteProcess.noteProcess temp = new noteProcess.noteProcess();
+//		temp.backup(temp.reach());
+//		temp.download();
 		new MainFrame();
-
 	}
 }
 class WinLis extends WindowAdapter//¼àÌý´°¿ÚµÄ¶¯Ì¬

@@ -1,5 +1,7 @@
 package calenderProcess;
 
+import java.util.Calendar;
+
 import noteProcess.Reminder;
 
 public class OneDay
@@ -54,5 +56,4 @@ public class OneDay
 	{
 		this.reminder = reminder;
 	}
-
 }

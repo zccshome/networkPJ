@@ -60,16 +60,16 @@ public class ChinaDate {
 
 	/**
 	 * ******************************************LOOK AT ME!!!!!!!!!!!!!!!!!!!!!!!!!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-	 * 农历显示调用的接口，传入的参数为Calendar类型，返回农历表示和相应节日
+	 * 农历显示调用的接口，传入的参数为三个String，分别代表年月日。返回农历表示和相应节日
 	 * 举例： System.out.println(toChinaDay(Calendar.getInstance(Locale.SIMPLIFIED_CHINESE)));将返回今天的农历3月4号： 癸巳年正月廿三
 	 * @param day
 	 * @return
 	 * ******************************************************************************************************
 	 */
-	public static String toChinaDay(Calendar day){
-		int year = day.get(Calendar.YEAR);
-		int month = day.get(Calendar.MONTH) + 1;
-		int date = day.get(Calendar.DATE);
+	public static String toChinaDay( String y , String m , String d ){
+		int year = Integer.parseInt(y);
+		int month = Integer.parseInt(m);
+		int date = Integer.parseInt(d);
 		long[] l = calElement(year, month, date);
 		StringBuffer sToday = new StringBuffer();
 		try {

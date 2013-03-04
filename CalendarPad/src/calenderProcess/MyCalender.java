@@ -98,7 +98,7 @@ public class MyCalender
 				}
 			}
 
-			daysArray[i].setDayText(dayText);
+			daysArray[i].setDayText(j+"");
 			daysArray[i].setDayTitle(dayTitle);
 			
 		}

@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import noteProcess.noteProcess;
-
 import calenderProcess.MyCalender;
+import utils.* ;
 
 public class CalenderPanel extends JPanel implements ActionListener
 {
@@ -116,7 +116,19 @@ public class CalenderPanel extends JPanel implements ActionListener
 //				}
 //			});
 
-			dayButtons[i].setText(cal.getDaysArray()[i].getDayText());
+			String dayTitle = cal.daysArray[i].getDayTitle();
+			
+			String ChinaDate = "" ;
+			if ( dayTitle.length() == 8 )
+			{
+				ChinaDate = utils.ChinaDate.toChinaDay(
+					dayTitle.substring(0, 4),
+					dayTitle.substring(4, 6),
+					dayTitle.substring(6, 8)
+					);
+			}
+			//dayButtons[i].setText(cal.getDaysArray()[i].getDayText());
+			dayButtons[i].setText(cal.getDaysArray()[i].getDayText());		
 			
 			// 若有备忘则高亮
 			if( cal.daysArray[i].getHasReminder() )
@@ -126,7 +138,6 @@ public class CalenderPanel extends JPanel implements ActionListener
 			}
 			
 			// 若是今日时间则高亮
-			String dayTitle = cal.daysArray[i].getDayTitle();
 			if ( dayTitle.length() == 8
 				&& dayTitle.substring(0, 4).equals(cal.curyear + "" ) 
 				&& dayTitle.substring(4, 6).equals((cal.curmonth<10)?"0" + cal.curmonth : cal.curmonth  + "" )
@@ -138,6 +149,7 @@ public class CalenderPanel extends JPanel implements ActionListener
 			}
 			
 			p2.add(dayButtons[i]);
+			
 		}
 		
 		yearLabel.setText(cal.year + "");

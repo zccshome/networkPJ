@@ -123,32 +123,33 @@ public class noteProcess extends MouseAdapter implements ActionListener
 				NotePanel.refresh(title, "");
 			}
 			NotePanel.noteArea.setText(RSAEncrypt.decryption(filepath + dayTitle + postfix));
-			
+		
+			//System.out.println(CalenderPanel.cal.daysArray[index].getCalendar().toString());
 		}
 		
 	}
 	
-	public void mousePressed(MouseEvent me)
-	{
-		
-		System.out.println("hello");
-		
-		//String filename = "src\\diary\\";
-		//String postfix = ".bak";
-		
-		int index = ((TransparentButton) me.getSource()).index;
-		String dayTitle = CalenderPanel.cal.daysArray[index].getDayTitle();
-		if (index >= CalenderPanel.cal.startDay && index <= CalenderPanel.cal.endDay)
-		{
-			String title = "";
-			title += dayTitle.substring(0, 4) + "年";
-			title += dayTitle.substring(4, 6) + "月";
-			title += dayTitle.substring(6, 8) + "日的日记";
-			
-			MyCalender.selectedDay = Integer.parseInt(dayTitle.substring(6, 8));
-			
-			NotePanel.refresh(title, "");
-		}
+//	public void mousePressed(MouseEvent me)
+//	{
+//		
+//		System.out.println("hello");
+//		
+//		//String filename = "src\\diary\\";
+//		//String postfix = ".bak";
+//		
+//		int index = ((TransparentButton) me.getSource()).index;
+//		String dayTitle = CalenderPanel.cal.daysArray[index].getDayTitle();
+//		if (index >= CalenderPanel.cal.startDay && index <= CalenderPanel.cal.endDay)
+//		{
+//			String title = "";
+//			title += dayTitle.substring(0, 4) + "年";
+//			title += dayTitle.substring(4, 6) + "月";
+//			title += dayTitle.substring(6, 8) + "日的日记";
+//			
+//			MyCalender.selectedDay = Integer.parseInt(dayTitle.substring(6, 8));
+//			
+//			NotePanel.refresh(title, "");
+//		}
 //		
 //		
 //		String year=CalendarPad.jtf1.getText();
@@ -164,20 +165,24 @@ public class noteProcess extends MouseAdapter implements ActionListener
 //			b="0"+b;
 //		if (c.length()==1)
 //			c="0"+c;
-		/*FileReader fr=new FileReader(filepath + a + b + c + postfix);
-		BufferedReader br=new BufferedReader(fr);
-		String s=new String();  
-		StringBuffer note = new StringBuffer();//note为日志内容
-		while((s=br.readLine())!=null)//读日志文件
-		{
-			note.append(s);
-		}
-		//CalendarPad.jta.setText(Encryption.decryption(note.toString()));*/
-		NotePanel.noteArea.setText(RSAEncrypt.decryption(filepath + dayTitle + postfix));
-		//fr.close();
-		
-	}
+//		/*FileReader fr=new FileReader(filepath + a + b + c + postfix);
+//		BufferedReader br=new BufferedReader(fr);
+//		String s=new String();  
+//		StringBuffer note = new StringBuffer();//note为日志内容
+//		while((s=br.readLine())!=null)//读日志文件
+//		{
+//			note.append(s);
+//		}
+//		//CalendarPad.jta.setText(Encryption.decryption(note.toString()));*/
+//		NotePanel.noteArea.setText(RSAEncrypt.decryption(filepath + dayTitle + postfix));
+//		//fr.close();
+//		
+//	}
+//	
 	
+	/**
+	 * 读取本地的全部备忘
+	 */
 	public ArrayList<Reminder> reach()
 	{
 		ArrayList<Reminder> reminders = new ArrayList<Reminder>();
@@ -216,6 +221,10 @@ public class noteProcess extends MouseAdapter implements ActionListener
 		}
 		return reminders;
 	}
+	/**
+	 * 将本地备忘全部添加到远端数据库
+	 * @param reminders
+	 */
 	public void backup(ArrayList<Reminder> reminders)
 	{
 		for(Reminder r: reminders)
@@ -232,6 +241,10 @@ public class noteProcess extends MouseAdapter implements ActionListener
 			}
 		}
 	}
+	/**
+	 * 将远端数据库中所有备忘全部取到本地进行合并。若某日的备忘本地已经存在则不覆盖。
+	 *
+	 */
 	public void download()
 	{
 		try {

@@ -1,11 +1,23 @@
 package noteProcess;
 
-public class Reminder
+public class Reminder implements java.io.Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int year;
 	private byte month;
 	private byte day;
 	private String content;
+	
+	public Reminder(int year, byte month, byte day, String content)
+	{
+		this.year = year;
+		this.month = month;
+		this.day = day;
+		this.content = content;
+	}
 	
 	public void setYear(int year)
 	{

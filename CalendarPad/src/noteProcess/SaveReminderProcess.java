@@ -19,7 +19,7 @@ public class SaveReminderProcess extends Thread {
 		Byte dayInt = Byte.parseByte(MyCalender.selectedDay+"");
 		
 		try {
-			Backup_db.addReminder(yearInt, monthInt, dayInt, RSAEncrypt.encryption(note)/*Encryption.encryption(note)*/);
+			Backup_db.addReminder(yearInt, monthInt, dayInt, Encryption.encryption(note)/*Encryption.encryption(note)*/);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();

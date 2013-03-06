@@ -44,8 +44,15 @@ public class NotePanel extends JPanel
 
 	public static void refresh(String dayTitle, String content)
 	{
-		dayTitleLabel.setText(dayTitle);
-		noteArea.setText(content);
+		if (MainFrame.isLogin)
+		{
+			dayTitleLabel.setText(dayTitle);
+			noteArea.setText(content);
+		}
+		else {
+			dayTitleLabel.setText("");
+			noteArea.setText("");
+		}
 	}
 	
 

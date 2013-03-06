@@ -7,6 +7,9 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import noteProcess.DeleteReminderProcess;
+import noteProcess.SyncReminderProcess;
+
 //import noteProcess.noteProcess;
 import GUI.*;
 
@@ -101,18 +104,17 @@ public class CalendarPad
 //		ShowCalender.showCalendar(gCalendar);
 		
 		// 设置外观
-		try {
-			//UIManager.setLookAndFeel(new com.sun.java.swing.plaf.windows.WindowsLookAndFeel());
-			String lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
-			UIManager.setLookAndFeel(lookAndFeel);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "加载 plaf 模式显示组件出错！", "错误",
-					JOptionPane.WARNING_MESSAGE);
-		}
+//		try {
+//			//UIManager.setLookAndFeel(new com.sun.java.swing.plaf.windows.WindowsLookAndFeel());
+//			String lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+//			UIManager.setLookAndFeel(lookAndFeel);
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, "加载 plaf 模式显示组件出错！", "错误",
+//					JOptionPane.WARNING_MESSAGE);
+//		}	
+		SyncReminderProcess sync = new SyncReminderProcess() ;
+		sync.start() ;
 		
-//		noteProcess.noteProcess temp = new noteProcess.noteProcess();
-//		temp.backup(temp.reach());
-//		temp.download();
 		new MainFrame();
 	}
 }

@@ -10,12 +10,13 @@ import java.util.Calendar;
 
 public class Backup_db
 {
-	//private static final String connectionString = "jdbc:mysql://localhost:3306/sepj1";
+	//private static final String connectionString = "jdbc:mysql://10.131.226.207:3306/sepj1";
 	private static final String connectionString = "jdbc:mysql://10.131.228.247:3306/sepj1";
 	//username for mysql, 'root' by default.
 	private static final String dbUsername = "root";
 	//user password for mysql, change to yours.
 	private static final String dbPassword = "root";
+	//private static final String dbPassword = "111";
 	
 	private static final String getReminder = "SELECT year,month,day,content FROM reminder where user_id=1";
 	private static final String addReminder = "INSERT INTO reminder(user_id,year,month,day,content,reminder_type,up_date) values(1,?,?,?,?,0,?)";

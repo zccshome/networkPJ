@@ -118,23 +118,26 @@ public class CalenderPanel extends JPanel implements ActionListener
 
 			String dayTitle = cal.daysArray[i].getDayTitle();
 			
-			String ChinaDate = "" ;
-			if ( dayTitle.length() == 8 )
-			{
-				ChinaDate = utils.ChinaDate.toChinaDay(
-					dayTitle.substring(0, 4),
-					dayTitle.substring(4, 6),
-					dayTitle.substring(6, 8)
-					);
-			}
-			//dayButtons[i].setText(cal.getDaysArray()[i].getDayText());
-			dayButtons[i].setText(cal.getDaysArray()[i].getDayText());		
+//			String ChinaDate = "" ;
+//			if ( dayTitle.length() == 8 )
+//			{
+//				ChinaDate = utils.ChinaDate.toChinaDay(
+//					dayTitle.substring(0, 4),
+//					dayTitle.substring(4, 6),
+//					dayTitle.substring(6, 8)
+//					);
+//			}
+			dayButtons[i].setText(cal.getDaysArray()[i].getDayText());
+			//dayButtons[i].setText(cal.getDaysArray()[i].getDayText() + ChinaDate );		
 			
-			// 若有备忘则高亮
-			if( cal.daysArray[i].getHasReminder() )
+			if (MainFrame.isLogin)
 			{
-				dayButtons[i].setOpaque(true);
-				dayButtons[i].setBackground(Color.yellow);
+				// 若有备忘则高亮
+				if( cal.daysArray[i].getHasReminder() )
+				{
+					dayButtons[i].setOpaque(true);
+					dayButtons[i].setBackground(Color.yellow);
+				}
 			}
 			
 			// 若是今日时间则高亮

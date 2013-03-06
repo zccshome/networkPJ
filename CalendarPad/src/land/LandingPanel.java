@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
+import GUI.MainFrame;
 import MyPackage.CalendarPad;
 
 public class LandingPanel extends JFrame{
@@ -72,7 +73,6 @@ public class LandingPanel extends JFrame{
 		
 		loadButton.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				String username = nameField.getText();
@@ -84,13 +84,18 @@ public class LandingPanel extends JFrame{
 				else{
 					if(Validate.isValidate(username, userpass) == true){
 						//JOptionPane.showMessageDialog(null, "登陆成功");
-						setVisible(false);
-						CalendarPad.main(new String[]{});
+//						setVisible(false);
+						MainFrame.usernameLabel.setText(username + " 已登录");
+						MainFrame.isLogin = true;
+						MainFrame.jm_3.setText("退出");
+						MainFrame.jm_3_1.setText("退出");
+						MainFrame.calenderPanel.refresh();
+						dispose();
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "登录失败");
 						
-						CalendarPad.main(new String[]{});
+						//CalendarPad.main(new String[]{});
 					}
 				}
 				
@@ -98,7 +103,6 @@ public class LandingPanel extends JFrame{
 		});
 		cancleButton.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				setVisible(false);
@@ -106,18 +110,18 @@ public class LandingPanel extends JFrame{
 		});
 	}
 
-	public static void main ( String[] args )
-	{
-//		 设置外观
-		try {
-			UIManager.setLookAndFeel(new com.sun.java.swing.plaf.windows.WindowsLookAndFeel());
-//			String lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
-//			UIManager.setLookAndFeel(lookAndFeel);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "加载 plaf 模式显示组件出错！", "错误",
-					JOptionPane.WARNING_MESSAGE);
-		}
-		new LandingPanel() ;
-	}
+//	public static void main ( String[] args )
+//	{
+////		 设置外观
+////		try {
+////			UIManager.setLookAndFeel(new com.sun.java.swing.plaf.windows.WindowsLookAndFeel());
+//////			String lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+//////			UIManager.setLookAndFeel(lookAndFeel);
+////		} catch (Exception e) {
+////			JOptionPane.showMessageDialog(null, "加载 plaf 模式显示组件出错！", "错误",
+////					JOptionPane.WARNING_MESSAGE);
+////		}
+//		new LandingPanel() ;
+//	}
 	
 }

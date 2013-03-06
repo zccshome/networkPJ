@@ -24,27 +24,33 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
+import land.LandingPanel;
+
 public class MainFrame extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 1L;
+	
+	public static boolean isLogin = false;
 
 	private BackgroundPanel bgPanel = new BackgroundPanel();
 	private JMenuBar jmb = new JMenuBar();
 	private MyJMenu jm_1 = new MyJMenu("Æ¤·ô");
 	private MyJMenu jm_2 = new MyJMenu("²å¼þ");
-	private MyJMenu jm_3 = new MyJMenu("µÇÂ½");
+	public static JMenu jm_3 = new JMenu("µÇÂ½");
+	
+	public static JLabel usernameLabel = new JLabel("Î´µÇÂ¼");
 	
 	public static CalenderPanel calenderPanel = new CalenderPanel();
 	
 	private NotePanel notePanel = new NotePanel();
-	private JLabel usernameLabel = new JLabel("XXX ÒÑµÇÂ¼");
+	
 
 	private JMenuItem jm_1_1 = new JMenuItem("ÎÞ");
 	private JMenuItem jm_1_2 = new JMenuItem("³È");
 	private JMenuItem jm_1_3 = new JMenuItem("ÂÌ");
 	private JMenuItem jm_1_4 = new JMenuItem("·Û");
 	private JMenuItem jm_1_5 = new JMenuItem("À¶");
-	private JMenuItem jm_3_1 = new JMenuItem("µÇÂ½");
+	public static JMenuItem jm_3_1 = new JMenuItem("µÇÂ½");
 
 	private String bgImageFileName;
 
@@ -57,7 +63,7 @@ public class MainFrame extends JFrame implements ActionListener
 		{
 			e1.printStackTrace();
 		}
-
+		
 		calenderPanel.setBounds(20, 0, 500, 550);
 		notePanel.setBounds(530, 0, 350, 550);
 		usernameLabel.setBounds(550, 10, 200, 30);
@@ -159,13 +165,16 @@ public class MainFrame extends JFrame implements ActionListener
 		{
 			if (jm_3.getText().equals("µÇÂ½"))
 			{
-				jm_3.setText("ÍË³ö");
-				jm_3_1.setText("ÍË³ö");
+				new LandingPanel();
 			}
 			else 
 			{
 				jm_3.setText("µÇÂ½");
 				jm_3_1.setText("µÇÂ½");
+				usernameLabel.setText("Î´µÇÂ¼");
+				isLogin = false;
+				calenderPanel.refresh();
+				notePanel.refresh("", "");
 			}
 		}
 	}

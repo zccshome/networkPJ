@@ -4,23 +4,27 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import utils.ChinaDate;
+
 public class MyCalender
 {
 	// 今日时间
 	public static int curyear , curmonth , curday ;
 	// 当前显示的时间
+	private Calendar cal = Calendar.getInstance();
 	public static int year, month, day ;
 	public static int selectedDay ;
-	private GregorianCalendar cal;
+	
 	public OneDay[] daysArray = new OneDay[42];
 	public int startDay, endDay;
 
 	public MyCalender()
 	{
+		year = cal.get(Calendar.YEAR);
+		month = (cal.get(Calendar.MONTH) + 1);
+		day = cal.get(Calendar.DATE);
+		
 		GregorianCalendar gCalendar = (GregorianCalendar) Calendar.getInstance();
-		year = gCalendar.get(Calendar.YEAR);
-		month = (gCalendar.get(Calendar.MONTH) + 1);
-		day = gCalendar.get(Calendar.DATE);
 		curyear = gCalendar.get(Calendar.YEAR);
 		curmonth = (gCalendar.get(Calendar.MONTH) + 1);
 		curday = gCalendar.get(Calendar.DATE);
@@ -37,37 +41,17 @@ public class MyCalender
 		{
 			daysArray[i] = new OneDay();
 		}
-//		
-//		for (int i = 0; i < 42; i++)
-//		{
-//			daysArray[i].setDayText("");
-//		}
+		
+		cal.set(year, month-1, 1);
 
-		cal = new GregorianCalendar(year, month - 1, day);
-		int d = cal.get(Calendar.DAY_OF_WEEK); // d为当月第一天在一周中的位置
+		int maxday = cal.getActualMaximum(Calendar.DATE); // 当月最大日期
 
-		int maxday; // 当月最大日期
-		if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
-			maxday = 31;
-		else
-			maxday = 30;
-		if (month == 2 && cal.isLeapYear(year))
-			maxday--;
-		if (month == 2 && !cal.isLeapYear(year))
-			maxday = 28;
-
-		startDay = d + 3;
-		if (startDay < 0)
-			startDay += 7;
-		if (startDay > 6)
-			startDay -= 7;
-		endDay = startDay + maxday - 1;
-//		System.out.println(d + " " + startDay + " " + endDay);
+		startDay = cal.get(Calendar.DAY_OF_WEEK)-1;
+		endDay = startDay + maxday;
 		
 		// 读取备忘列表
 		File file = new File("src\\diary\\");
 		String fileList[] = file.list();
-		String postfix = ".bak";
 		int size = 0;
 		if (fileList != null) {
 			size = fileList.length;
@@ -88,6 +72,10 @@ public class MyCalender
 				dayTitle += month;
 			dayTitle += dayText;
 			
+			dayText = "<html><p style=\"font: 16px bold; color:red\">" + dayText + "</p><p style=\"font: 10px\">";
+			//农历显示
+			dayText += ChinaDate.toChinaDay(year+"", month+"", j+"") + "</p></html>";
+			
 			// 标记是否有备忘
 			for ( int k = 0 ; k < size ; k ++ )
 			{
@@ -98,18 +86,11 @@ public class MyCalender
 				}
 			}
 
-			daysArray[i].setDayText(j+"");
+			daysArray[i].setDayText(dayText);
 			daysArray[i].setDayTitle(dayTitle);
 			
 		}
 		
-//		for (int kk = 0; kk < 42; kk++)
-//		{
-//			System.out.print(daysArray[kk].getHasReminder()?1:0);
-//		}
-//		System.out.println();
-		
-		//System.out.println("DaysArray refreshed !");
 	}
 
 	public OneDay[] getDaysArray()

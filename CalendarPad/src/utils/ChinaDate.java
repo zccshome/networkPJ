@@ -73,10 +73,10 @@ public class ChinaDate {
 		long[] l = calElement(year, month, date);
 		StringBuffer sToday = new StringBuffer();
 		try {
-			sToday.append(cyclical(year));
-			sToday.append("年");
-			sToday.append(nStr1[(int) l[1]]);
-			sToday.append("月");
+//			sToday.append(cyclical(year));
+//			sToday.append("年");
+//			sToday.append(nStr1[(int) l[1]]);
+//			sToday.append("月");
 			sToday.append(getChinaDate((int) (l[2])));
 			return sToday.toString();
 		} finally {

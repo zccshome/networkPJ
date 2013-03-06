@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,8 +23,8 @@ public class noteProcess extends MouseAdapter implements ActionListener
 	private String postfix = ".bak";
 
 	public void actionPerformed(ActionEvent ae)
-	{
-		if(ae.getActionCommand()=="保存日记")
+	{	
+		if( (ae.getActionCommand()=="保存日记") && MainFrame.isLogin )
 		{
 			String note=NotePanel.noteArea.getText();
 			if ( note == null || note.equals("") )
@@ -47,10 +48,16 @@ public class noteProcess extends MouseAdapter implements ActionListener
 			//System.out.println(filename + "\t" + note);
 			char[] buffer=new char[note.length()];
 			note.getChars(0, note.length(), buffer, 0);
-			/*FileWriter f=new FileWriter(filename);
-			  f.write(Encryption.encryption(note));  
-			  f.close();*/
-				RSAEncrypt.encryption(note, filename);
+			FileWriter f;
+			try {
+				f = new FileWriter(filename);
+				f.write(Encryption.encryption(note));  
+				  f.close();
+			} catch (IOException e) {
+				// 没有备忘
+			}
+			  
+				//RSAEncrypt.encryption(note, filename);
 				//filename = "src\\diary\\";
 				
 				// 刷新界面
@@ -70,7 +77,7 @@ public class noteProcess extends MouseAdapter implements ActionListener
 //				}
 
 		}
-		else if(ae.getActionCommand()=="删除日记")
+		else if( (ae.getActionCommand()=="删除日记") && MainFrame.isLogin )
 		{
 			
 			int yearInt = MyCalender.year ;
@@ -107,7 +114,7 @@ public class noteProcess extends MouseAdapter implements ActionListener
 //			}
 		}
 		// 点击某天显示备忘
-		else
+		else if ( MainFrame.isLogin )
 		{
 			int index = ((TransparentButton) ae.getSource()).index;
 			String dayTitle = CalenderPanel.cal.daysArray[index].getDayTitle();
@@ -122,8 +129,24 @@ public class noteProcess extends MouseAdapter implements ActionListener
 				
 				NotePanel.refresh(title, "");
 			}
-			NotePanel.noteArea.setText(RSAEncrypt.decryption(filepath + dayTitle + postfix));
-		
+			try {				
+				FileReader fr = new FileReader(filepath + dayTitle + postfix);
+				BufferedReader br=new BufferedReader(fr);
+				String s=new String();  
+				StringBuffer note = new StringBuffer();//note为日志内容
+				while((s=br.readLine())!=null)//读日志文件
+				{
+					note.append(s);
+				}
+				NotePanel.noteArea.setText(Encryption.decryption(note.toString()));
+				br.close();
+				fr.close();
+			} catch (Exception e) {
+				// TODO 自动生成 catch 块
+				//System.err.println("读取备忘出错") ;
+			}
+			
+			//CalendarPad.jta.setText(Encryption.decryption(note.toString()));
 			//System.out.println(CalenderPanel.cal.daysArray[index].getCalendar().toString());
 		}
 		

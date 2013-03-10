@@ -1,8 +1,9 @@
 package noteProcess;
 
+import gui.NotePanel;
+
 import java.sql.SQLException;
 
-import GUI.NotePanel;
 import calenderProcess.MyCalender;
 
 public class SaveReminderProcess extends Thread {

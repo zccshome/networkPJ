@@ -1,5 +1,7 @@
 package noteProcess;
 
+import gui.*;
+
 import java.awt.Color;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -12,8 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JTextField;
 
-import GUI.*;
-import MyPackage.*;
+import launcher.*;
+
 import calenderProcess.*;
 
 public class noteProcess extends MouseAdapter implements ActionListener

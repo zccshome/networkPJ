@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+/*
+ * this class provide methods to get the Chinese Lunar Calendar.
+ */
+
 public class ChinaDate {
 	final private static long[] lunarInfo = new long[] { 0x04bd8, 0x04ae0,
 			0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0,
@@ -61,7 +65,6 @@ public class ChinaDate {
 	/**
 	 * ******************************************LOOK AT ME!!!!!!!!!!!!!!!!!!!!!!!!!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 	 * 农历显示调用的接口，传入的参数为三个String，分别代表年月日。返回农历表示和相应节日
-	 * 举例： System.out.println(toChinaDay(Calendar.getInstance(Locale.SIMPLIFIED_CHINESE)));将返回今天的农历3月4号： 癸巳年正月廿三
 	 * @param day
 	 * @return
 	 * ******************************************************************************************************
@@ -73,10 +76,6 @@ public class ChinaDate {
 		long[] l = calElement(year, month, date);
 		StringBuffer sToday = new StringBuffer();
 		try {
-//			sToday.append(cyclical(year));
-//			sToday.append("年");
-//			sToday.append(nStr1[(int) l[1]]);
-//			sToday.append("月");
 			sToday.append(getChinaDate((int) (l[2])));
 			return sToday.toString();
 		} finally {

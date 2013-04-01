@@ -11,8 +11,9 @@ public class Program
      */
    public static List<string[]> stringParse(string args)
    {
-     // string DictPath = Path.Combine(Environment.CurrentDirectory, "Data") + Path.DirectorySeparatorChar;
-       string DictPath = "Data" + Path.DirectorySeparatorChar;
+     //string DictPath = Path.Combine(Environment.CurrentDirectory, "Data") + Path.DirectorySeparatorChar;
+     //string DictPath = "Data" + Path.DirectorySeparatorChar;
+     string DictPath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "App_Data\\Data" + Path.DirectorySeparatorChar;
      WordSegmentSample sample = new WordSegmentSample(DictPath, 2);
 
       List<WordResult[]> parseResult = sample.Segment(@args);

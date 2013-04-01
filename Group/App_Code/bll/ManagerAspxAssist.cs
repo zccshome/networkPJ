@@ -23,7 +23,7 @@ public class ManagerAspxAssist
      *       2、截取content的前100~150字作为abstract，填进article实例中去
      *       3、将article实例的time字段设为当前时间，wordCount字段设为-1，heat字段设为0
      *       4、调用dal层函数在数据库Article表中新增一条记录，得到返回的articleId
-     *       5、以articleId为文件名、title + content为文件内容将文章以txt格式存储于本地文件系统中（放到Articles目录下面）
+     *       5、以articleId为文件名、title + content为文件内容将文章以txt格式存储于本地文件系统中（放到App_Data\Articles目录下面）
      *       6、将文章存储的路径填写到数据库article表的fileURL字段中
      *       7、调用parseArticle函数，将该文章进行解析和自动分类
      *       8、返回得到的articleId。
@@ -106,7 +106,7 @@ public class ManagerAspxAssist
      *          Response.Write(output.ElementAt(i)[0] + "&emsp;" + output.ElementAt(i)[1] + "<br />");
      *       }       
      *       
-     * 分词技术说明：该分词解决方案使用的是“SharpICTCLAS分词系统 1.0”的研究成果和代码，其字典库为在“Group/App_Code/Data”目录下，
+     * 分词技术说明：该分词解决方案使用的是“SharpICTCLAS分词系统 1.0”的研究成果和代码，其字典库为在“Group/App_Data/Data”目录下，
      *     其核心驱动在“Group/Bin”目录下，其调用入口在“Group/App_Code/parse”目录下。
      */
     private static List<string[]> stringParse(string content)

@@ -24,7 +24,12 @@ public class Article
         DateTime time, int wordCount, int heat)
     {
         ArticleId = articleId;
-        new Article(articleId, title, articleAbstract, fileURL, time, wordCount, heat);
+        Title = title;
+        Abstrct = articleAbstract;
+        FileURL = fileURL;
+        Time = time;
+        WordCount = wordCount;
+        Heat = heat;
 
     }
 

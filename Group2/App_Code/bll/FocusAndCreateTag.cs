@@ -16,7 +16,7 @@ public class FocusAndCreateTag
 	}
 
     /**
-     * 输入：用户关注的所有tag（这里只有子分类，不会出现兴趣标签）的tagId列表
+     * 输入：用户关注的所有tag（这里只有子分类，不会出现兴趣标签）的tagId列表（包括所有的“其他”子分类），用户的id
      * 输出：成功返回true，失败返回false
      * 功能：记录用户关注的子分类信息到数据库
      * 注意：进行数据库操作时，要先删除该用户的所有非兴趣标签类型的关注，再重新添加用户关注的子分类。
@@ -25,9 +25,37 @@ public class FocusAndCreateTag
      *       
      * 还有任何不理解的地方请果断问清楚。
      */
-    public static bool saveFocus(List<int> tagIds)
+    public static bool saveFocus(List<int> tagIds , int userId )
     {
-        return false ;
+        //拿到指定用户旧的关注列表（包括子分类和兴趣标签）
+        User u = new User();
+        u.UserId = userId;
+        User u2 = UserManager.getUserById(u);
+        List<int> oldTagList = User2TagManager.getTagListByUserId(u2);
+        
+        //根据列表信息，删除用户对子分类的全部关注，只留下对兴趣标签的关注
+        if ( oldTagList != null )
+            foreach (int tempTagId in oldTagList)
+            {
+                Tag t = new Tag();
+                t.TagId = tempTagId;
+                Tag t2 = TagManager.getTag(t);
+                if ( t2.IsPrivate == 0 )
+                {
+                    // 删除用户关注
+                    User2Tag u2t = new User2Tag(userId ,tempTagId );
+                    User2TagManager.deleteRecord(u2t);
+                }
+            }
+        
+        //将用户的新的对子分类的关注列表存入User2Tag表中
+        foreach (int tempNewTagId in tagIds)
+        {
+            User2Tag u2t = new User2Tag(userId,tempNewTagId);
+            if (!User2TagManager.addRecord(u2t))
+                continue;
+        }
+        return true ;
     }
 
     /**
@@ -38,7 +66,14 @@ public class FocusAndCreateTag
      */
     public static bool addTag(int primaryGroupId, string tagName, string tagKeys, int userId)
     {
-        return false;
+        // 建立Tag
+        Tag t = new Tag( -1 , tagName , tagKeys , primaryGroupId , DateTime.Now , 1 );
+        int tagId = TagManager.addTag(t);
+        if (tagId < 0)
+            return false;
+        // 建立用户到tag的链接
+        User2Tag u2t = new User2Tag( userId , tagId );
+        return User2TagManager.addRecord(u2t);
     }
 
     /**
@@ -48,6 +83,15 @@ public class FocusAndCreateTag
      */
     public static bool deleteTag( User2Tag u2t )
     {
-        return false;
+        if (!User2TagManager.deleteRecord(u2t))
+            return false;
+        // 如果是兴趣标签，则除了删除User2Tag表中记录，还要删除Tag表中这个兴趣标签本身
+        Tag t = new Tag();
+        t.TagId = u2t.TagId;
+        Tag t2 = TagManager.getTag(t);
+        if ( t2.IsPrivate == 1 )
+            return TagManager.deleteTag(t2);
+        else
+            return true;
     }
 }

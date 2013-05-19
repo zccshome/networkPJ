@@ -1,0 +1,20 @@
+﻿body {
+    width:600px;
+    margin:0;
+}
+.mainContent2 {
+    margin:0 auto;
+    margin-top:20px;
+    padding-left:60px;
+    color:white;
+    width:600px;
+}
+#HolderTable {
+    width:600px;
+}
+#form1 {
+    color:white;
+}
+td span{
+    color:white;
+}

@@ -17,16 +17,22 @@ public class AccountAssist
 
     /*
      * 输入：一个User的model，除了userId之外所有字段都已填好，并已经经过合法性检查
-     * 输出：成功返回true，失败返回false
+     * 输出：成功返回userId，已有重复账号返回-1，数据库操作失败返回-2，邮箱重复返回-3
      * 功能：本函数需要依次实现以下功能：
      *       1、调用mailReplicated函数检查是否已经存在重复账号
      *       2、如无重复则将账户信息存入数据库
      *       3、根据数据库返回的信息判断是否成功，并返回相应信息
      * 用途说明：新用户注册
      */
-    public static bool register( User u )
+    public static int register( User u )
     {
-        return false ;
+        String userMail = u.UserMail;
+        if (mailReplicated(userMail))
+            return -3;
+        int newUserID = UserManager.addUser(u);
+        if (newUserID > 0)
+            u.UserId = newUserID;
+        return newUserID;
     }
 
     /*
@@ -38,7 +44,12 @@ public class AccountAssist
      */
     public static User login( User u )
     {
-        return null;
+        User uid = UserManager.getUserByNameAndPass(u);
+        if (uid == null)
+            return null;
+        uid.UserPass = "";
+        //Session["userId"] = uid.UserId;
+        return uid;
     }
 
     /**
@@ -49,6 +60,6 @@ public class AccountAssist
      */
     private static bool mailReplicated( string userMail )
     {
-        return true;
+        return UserManager.userMailRegistered(userMail) ;
     }
 }

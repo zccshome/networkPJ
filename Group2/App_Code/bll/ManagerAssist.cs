@@ -10,6 +10,8 @@ using System.Text;
 /// </summary>
 public class ManagerAssist
 {
+    public static List<String> stop_list = new List<String>();
+
 	public ManagerAssist()
 	{
 		//
@@ -33,7 +35,47 @@ public class ManagerAssist
      */
     public static int addArticle( string title, string content )
     {
-        return -1;
+        Article a = new Article();
+        if (title.Contains("\""))
+            title = title.Replace("\"", "\\\"");
+        if (title.Contains("'"))
+            title = title.Replace("'", "\\'");
+        a.Title = title;
+        if (content.Length > 300)
+            a.Abstrct = content.Substring(4, 300);
+        else
+            a.Abstrct = content.Substring(4, content.Length-4);
+        a.FileURL = ""; // 这里 FileURF 先随便设一个，下面如果插入成功的话，再重新update
+        a.Time = DateTime.Now;
+        a.WordCount = 0;
+        a.Heat = 0;
+
+        int aid = ArticleManager.addRecord(a);
+        if (aid > -1)
+        {
+            string dirPath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "App_Data\\Articles";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath); // 如果文件夹 Article不存在则新建
+            }
+            a.ArticleId = aid;
+            a.FileURL = "\\" + aid + ".txt";
+            ArticleManager.updateFileURL(a);    // 重新设置 FileURL
+            parseArticle(a, content);   // 这里面要从新设置一下 wordCount
+            ArticleManager.updateWordCount(a);
+
+            FileStream fs = new FileStream(dirPath + a.FileURL, FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs);
+            //开始写入
+            sw.Write(content);
+            //清空缓冲区
+            sw.Flush();
+            //关闭流
+            sw.Close();
+            fs.Close();
+        }
+
+        return aid;
     }
 
     /*
@@ -54,6 +96,96 @@ public class ManagerAssist
      */
     private static void parseArticle(Article a , string content )
     {
+        // 在这里先行数据库中读出 各个 primary group 的 关键词列表
+        List<List<string>> allGroupKeywordList = new List<List<string>>();
+        List<string[]> allGroup = PrimaryGroupMananger.getAllGroups();
+        foreach (string[] ag in allGroup)
+        {
+            PrimaryGroups g = new PrimaryGroups();
+            g.GroupId = Convert.ToInt32(ag[0]);
+            g.GroupName = ag[1];
+            allGroupKeywordList.Add(PrimaryGroupKeyWordsManager.getKeyWordsOfCertainPrimaryGroup(g));
+        }
+
+
+        List<String[]> parseList = stringParse(content);
+        a.WordCount = parseList.Count;
+        Dictionary<String, Int32> dic = new Dictionary<String, Int32>();
+        int wordMount = 0;
+        foreach (String[] tempString in parseList)
+        {
+            if (stop_list.Contains(tempString[0]))
+                continue;
+            if (!dic.ContainsKey(tempString[0]))
+            {
+                dic.Add(tempString[0], 1);
+                wordMount++;
+            }
+            else
+            {
+                int tempInt = dic[tempString[0]];
+                dic[tempString[0]] = tempInt + 1;
+            }
+        }
+        int articleID = a.ArticleId;
+        Dictionary<String, Double> tf_idf = new Dictionary<String, Double>();
+        foreach (KeyValuePair<String, Int32> keyPair in dic)
+        {
+            GlobalParse tempGP = new GlobalParse();
+            tempGP.ArticleNumber = 1; tempGP.WordContent = keyPair.Key; tempGP.Type = "q";
+            if (GlobalParseManager.addRecord(tempGP) == false)
+            {
+                int num = GlobalParseManager.selectRecordByWordContent(tempGP).ArticleNumber + 1;
+                tempGP.ArticleNumber = num;
+                GlobalParseManager.updateRecord(tempGP);
+            }
+            tempGP = GlobalParseManager.selectRecordByWordContent(tempGP);
+            LocalParse tempLP = new LocalParse();
+            tempLP.ArticleId = articleID; tempLP.WordContent = tempGP.WordContent; tempLP.Count = keyPair.Value;
+            tempLP.Type = "q";
+            LocalParseManager.addRecord(tempLP);
+
+            // Counting tf_idf
+            int tf_fenzi = tempLP.Count; int tf_fenmu = wordMount;
+            int total_document_number = ArticleManager.countArticleNum();
+            int document_number_with_word = tempGP.ArticleNumber;
+            double tf_idf_value = ((double)tf_fenzi) / tf_fenmu;// *Math.Log((total_document_number / document_number_with_word), Math.E);
+            tf_idf.Add(keyPair.Key, tf_idf_value);
+        }
+        //tf_idf.OrderByDescending(s => s.Value);
+        double[] answer = new double[allGroup.Count];
+        for (int i = 0; i < answer.Length; i++)
+            answer[i] = 0;
+        //Console.Write(tf_idf.ElementAt(0).Key);
+        //Console.WriteLine(other.Count);
+
+        for (int i = 0; i < answer.Length; i++)
+        {
+            List<string> list = allGroupKeywordList[i];
+            if (list == null)
+                continue;
+            foreach (String tempS in list)
+            {
+                if (tf_idf.ContainsKey(tempS))
+                    answer[i] += tf_idf[tempS];
+            }
+        }
+        Article2Group a2g = new Article2Group();
+        a2g.ArticleId = a.ArticleId;
+        a2g.GroupId = max(answer);
+        Article2GroupManager.addRecord(a2g);
+    }
+
+    static int max(double[] a)
+    {
+        int index = 0, length = a.Length;
+        double max = a[0];
+        for (int i = 1; i < length; i++) 
+            if (a[i] > max) { 
+                max = a[i]; 
+                index = i; 
+            }
+        return index;
     }
 
     /*
@@ -65,7 +197,7 @@ public class ManagerAssist
      */
     public static List<int> getGroupIdsByArticleWrapper(Article a)
     {
-        return null;
+        return Article2GroupManager.getGroupIdsByArticle(a);
     }
 
     /*
@@ -76,9 +208,20 @@ public class ManagerAssist
      * 注：之所以要将getGroupIdsByArticleWrapper和getGroupNamesByGroupIds两个函数的功能分开，主要是考虑到降低代码耦合性，
      *     同时，即便将两个函数的功能合并到一起，也不会降低数据库的读操作开销。
      */
-    public static List<String> getGroupNamesByGroupIds(List<int> groupIds)
+    public static List<String> getPrimaryGroupNamesByPrimaryGroupIds(List<int> groupIds)
     {
-        return null;
+        List<string> result = new List<string>();
+        Console.Write(groupIds[0]);
+        foreach (int id in groupIds)
+        {
+            PrimaryGroups g = new PrimaryGroups();
+            g.GroupId = id;
+            PrimaryGroups sg = PrimaryGroupMananger.selectRecord(g);
+            if (sg != null)
+                result.Add(g.GroupName);
+        }
+
+        return result;
     }
 
     /*
@@ -90,28 +233,70 @@ public class ManagerAssist
      */
     public static bool changeGroupRelation(Article a, List<int> groupIds)
     {
-        return false;
+        bool result = true;
+
+        // 先删除旧的 groupIds
+        List<int> old_gids = Article2GroupManager.getGroupIdsByArticle(a);  // 这里我认为这个传入的 Article 的 id 是已经赋值了的
+        foreach (int old_gid in old_gids)
+        {
+            Article2GroupManager.deleteRecord(new Article2Group(a.ArticleId, old_gid));
+        }
+        // 再插入新的 groupIds
+        foreach (int gid in groupIds)
+        {
+            if (Article2GroupManager.addRecord(new Article2Group(a.ArticleId, gid)) == false)
+                result = false; // 只要有一条记录插入不成功，则返回 false
+        }
+
+        return result;
     }
 
     /**
      * 输入：新主分类的名称，以及相应的关键词列表。各个关键词之间用空格分隔。
      * 输出：返回所有未被分到任何主分类的文章列表
      * 功能：1、新增一个主分类
+     *       2、在该主分类下增加一个“其他”子分类
      *       2、调用NewsAssist.cs中getArticleListOfOthers( int userId , GroupNode gn )方法，通过将第二个参数置为null，拿到所有未被分到任何主分类的文章列表；
      *       3、返回这些文章的列表，让管理员查看一下其中有没有可以直接被分到新的主分类去的文章。
      */
     public static List<Article> addPrimaryGroup( string name , string keywordsList )
     {
-        return null;
+        // 功能：1、新增一个主分类
+        PrimaryGroups pg = new PrimaryGroups();
+        pg.GroupName = name;
+        int gid = PrimaryGroupMananger.addRecord(pg);
+        PrimaryGroupKeyWords pgk = new PrimaryGroupKeyWords();
+        pgk.PrimaryGroupId = gid;
+        pgk.KeyWord = keywordsList;
+        bool addPGKsuccess = PrimaryGroupKeyWordsManager.addRecord(pgk);
+        if (addPGKsuccess)
+        {
+            addSecondaryGroup(gid, "其他", "");
+        }
+
+        // 功能：2、调用Articlemanager.cs 中的方法,返回所有未分类的文章
+        PrimaryGroups p = new PrimaryGroups();
+        p.GroupId = 0;
+        return ArticleManager.getArticleListByPrimaryGroup(p);
     }
 
     /**
      * 输入：新子分类隶属于的主分类id，新子分类的名称，相应的关键词列表
      * 输出：成功返回true，失败返回false
-     * 功能：新增一个子分类
+     * 功能：管理员新增一个子分类（tag 的 isPrivate 设为 0）
+     * 注意： tag 的 tagTime 由本函数设置
      */
     public static bool addSecondaryGroup( int primaryGroupId , string name, string keywords )
     {
+        Tag t = new Tag();
+        t.TagName = name;
+        t.TagKeys = keywords;
+        t.GroupId = primaryGroupId;
+        t.TagTime = DateTime.Now;
+        t.IsPrivate = 0;
+        int tid = TagManager.addTag(t);
+        if (tid > 0)
+            return true;
         return false;
     }
 

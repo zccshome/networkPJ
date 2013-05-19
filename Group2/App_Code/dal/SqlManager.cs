@@ -93,4 +93,26 @@ public class SqlManager
         return result;
     }
 
+    public static void ExecuteNoQuery(string sqlStr, params object[] paraValues)
+    {
+        
+
+        SqlConnection myConn = GetConnection();
+        myConn.Open();
+        SqlCommand myCmd = new SqlCommand(sqlStr, myConn);
+        try
+        {
+            myCmd.Parameters.AddRange(paraValues);
+            myCmd.ExecuteNonQuery();
+            myConn.Close();
+        }
+        catch
+        {
+            myConn.Close();
+            
+        }
+      
+    }
+
+
 }

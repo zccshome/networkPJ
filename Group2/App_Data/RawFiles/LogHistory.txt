@@ -1,0 +1,117 @@
+[2013-05-03 14:04:57.939] [000179] [test] [MYSQL]
+SHOW VARIABLES LIKE 'lower_case_%'
+
+[2013-05-03 14:04:57.939] [000179] [test] [MYSQL]
+SHOW VARIABLES LIKE 'profiling'
+
+[2013-05-03 14:04:57.954] [000179] [test] [MYSQL]
+SHOW DATABASES
+
+[2013-05-03 14:05:04.007] [000179] [test] [MYSQL]
+DROP DATABASE `management`
+
+[2013-05-03 14:05:09.155] [000179] [test] [MYSQL]
+SHOW CHARACTER SET
+
+[2013-05-03 14:05:09.155] [000179] [test] [MYSQL]
+SHOW COLLATION
+
+[2013-05-03 14:05:13.289] [000179] [test] [MYSQL]
+CREATE DATABASE `management`
+
+[2013-05-03 14:05:13.305] [000179] [test] [MYSQL]
+SHOW DATABASES
+
+[2013-05-03 14:05:14.740] [000180] [test] [MYSQL]
+SELECT @@character_set_database, @@collation_database
+
+[2013-05-03 14:05:14.756] [000180] [test] [MYSQL]
+SHOW FULL TABLES WHERE Table_type != 'VIEW'
+
+[2013-05-03 14:05:28.671] [000182] [test] [MYSQL]
+SELECT @@character_set_database, @@collation_database
+
+[2013-05-03 14:05:28.686] [000182] [test] [MYSQL]
+SHOW FULL TABLES WHERE Table_type != 'VIEW'
+
+[2013-05-03 14:05:30.746] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `project_plan`
+
+[2013-05-03 14:05:30.761] [000183] [test] [MYSQL]
+SELECT * FROM `project_plan` LIMIT 0, 1000
+
+[2013-05-03 14:05:30.761] [000183] [test] [MYSQL]
+SHOW COLUMNS FROM `management`.`project_plan`
+
+[2013-05-03 14:05:33.647] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `project_info`
+
+[2013-05-03 14:05:33.647] [000184] [test] [MYSQL]
+SELECT * FROM `project_info` LIMIT 0, 1000
+
+[2013-05-03 14:05:33.647] [000184] [test] [MYSQL]
+SHOW COLUMNS FROM `management`.`project_info`
+
+[2013-05-03 14:05:36.471] [000182] [test] [MYSQL]
+SHOW ENGINES
+
+[2013-05-03 14:05:36.487] [000182] [test] [MYSQL]
+SHOW TABLE STATUS LIKE 'project_plan'
+
+[2013-05-03 14:05:36.487] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `project_plan`
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SELECT TABLE_NAME, PARTITION_NAME, SUBPARTITION_NAME, PARTITION_METHOD, SUBPARTITION_METHOD, PARTITION_EXPRESSION, SUBPARTITION_EXPRESSION, PARTITION_DESCRIPTION, PARTITION_COMMENT, NODEGROUP, TABLESPACE_NAME FROM information_schema.PARTITIONS WHERE TABLE_SCHEMA LIKE 'management' AND NOT ISNULL(PARTITION_NAME) AND TABLE_NAME LIKE 'project_plan' ORDER BY TABLE_NAME, PARTITION_NAME, PARTITION_ORDINAL_POSITION, SUBPARTITION_ORDINAL_POSITION
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SHOW FULL COLUMNS FROM `project_plan`
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `project_plan`
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SELECT * FROM `information_schema`.`columns` WHERE TABLE_NAME='project_plan' AND TABLE_SCHEMA='management'
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SHOW INDEX FROM `project_plan`
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SELECT trigger_name, event_manipulation, event_object_table, action_statement, action_timing, DEFINER FROM information_schema.triggers WHERE event_object_schema='management' AND event_object_table='project_plan'
+
+[2013-05-03 14:05:36.502] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `project_plan`
+
+[2013-05-03 14:07:55.060] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `project_plan`
+
+[2013-05-03 14:07:55.060] [000188] [test] [MYSQL]
+SELECT * FROM `project_plan` LIMIT 0, 1000
+
+[2013-05-03 14:07:55.060] [000188] [test] [MYSQL]
+SHOW COLUMNS FROM `management`.`project_plan`
+
+[2013-05-03 14:08:00.411] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `plan_task`
+
+[2013-05-03 14:08:00.427] [000189] [test] [MYSQL]
+SELECT * FROM `plan_task` LIMIT 0, 1000
+
+[2013-05-03 14:08:00.427] [000189] [test] [MYSQL]
+SHOW COLUMNS FROM `management`.`plan_task`
+
+[2013-05-03 14:08:05.575] [000182] [test] [MYSQL]
+SHOW CREATE TABLE `plan_task`
+
+[2013-05-03 14:08:05.590] [000190] [test] [MYSQL]
+SELECT * FROM `plan_task` LIMIT 0, 1000
+
+[2013-05-03 14:08:05.590] [000190] [test] [MYSQL]
+SHOW COLUMNS FROM `management`.`plan_task`
+
+[2013-05-03 14:08:11.347] [000190] [test] [MYSQL]
+UPDATE `plan_task` SET `PlanNumber`='2' WHERE (`ProjectID`='1') AND (`PlanNumber`='1') AND (`TaskNumber`='2')
+
+[2013-05-03 14:08:11.362] [000190] [test] [MYSQL]
+SELECT * FROM `plan_task` WHERE (`ProjectID`='1') AND (`PlanNumber`='2') AND (`TaskNumber`='2') LIMIT 1
+

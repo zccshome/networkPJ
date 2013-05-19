@@ -17,9 +17,22 @@ public class PrimaryGroupKeyWords
 
     public PrimaryGroupKeyWords(int primaryGroupId , string keyWord)
     {
-        // 待实现！！！
+        PrimaryGroupId = primaryGroupId;
+        KeyWord = keyWord;
     }
 
     private int primaryGroupId; //主分类id
     private string keyWord;     //某个关键词（同一个主分类可以有多个关键词）
+
+    public int PrimaryGroupId
+    {
+        get { return primaryGroupId; }
+        set { primaryGroupId = value; }
+    }
+    public string KeyWord
+    {
+        get { return keyWord; }
+        set { keyWord = value; }
+    }
+
 }

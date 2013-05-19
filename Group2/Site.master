@@ -19,22 +19,19 @@
                 </h1>
             </div>
             <div class="loginDisplay">
-                <asp:LoginView ID="HeadLoginView" runat="server" EnableViewState="false">
-                    <AnonymousTemplate>
-                        <!-- [ <a href="~/Account/Login.aspx" ID="HeadLoginStatus" runat="server">登录</a> ] -->
-                    </AnonymousTemplate>
-                    <LoggedInTemplate>
-                        欢迎您，<span class="bold"><asp:LoginName ID="HeadLoginName" runat="server" /></span>!
-                        [ <asp:LoginStatus ID="HeadLoginStatus" runat="server" LogoutAction="Redirect" LogoutText="注销" LogoutPageUrl="~/"/> ]
-                    </LoggedInTemplate>
-                </asp:LoginView>
+                <asp:TextBox ID="SearchBox" runat="server" style="margin-left: 0px"></asp:TextBox>
+                <asp:DropDownList ID="SearchDropDownList" runat="server" Height="23px">
+                    <asp:ListItem Value="-1">全部</asp:ListItem>
+                </asp:DropDownList>
+                <asp:Button ID="SearchButton" runat="server" Height="25px" Text="Search" 
+                    onclick="SearchButton_Click" />
             </div>
             <div class="clear hideSkiplink">
                 <asp:Menu ID="NavigationMenu" runat="server" CssClass="menu" EnableViewState="false" IncludeStyleBlock="false" Orientation="Horizontal">
                     <Items>
                         <asp:MenuItem NavigateUrl="~/About.aspx" Text="About"/>
                         <asp:MenuItem NavigateUrl="~/AddGroup.aspx" Text="AddGroup" />
-                        <asp:MenuItem NavigateUrl="~/FileUpload.aspx" Text="FileUpload" />
+                        <asp:MenuItem NavigateUrl="~/UploadFile.aspx" Text="UploadFile" />
                         <asp:MenuItem NavigateUrl="~/FocusSelect.aspx" Text="FocusSelect" />
                         <asp:MenuItem NavigateUrl="~/Login.aspx" Text="Login" />
                         <asp:MenuItem NavigateUrl="~/News.aspx" Text="News"/>
@@ -47,8 +44,7 @@
             <asp:ContentPlaceHolder ID="MainContent" runat="server"/>
         </div>
         <div class="clear">
-        </div>
-    </div>
+        </div>&nbsp;</div>
     <div class="footer">
         
     </div>

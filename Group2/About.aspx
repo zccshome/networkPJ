@@ -2,9 +2,10 @@
     CodeFile="About.aspx.cs" Inherits="About" %>
 
 <asp:Content ID="HeaderContent" runat="server" ContentPlaceHolderID="HeadContent">
+    <link href="Styles/About.css" rel="stylesheet" type="text/css" />
 </asp:Content>
 <asp:Content ID="BodyContent" runat="server" ContentPlaceHolderID="MainContent">
-   
+<div class="mainContent">
 <h2>项目概述</h2>
 <p style="text-indent:2em">每天读者都会阅读大量的新闻、文章，而且读者更希望有针对性的阅读自己感兴趣领域的文章，因此希望有一个系统，能够对新闻、文章进行分类，供读者阅读。该系统通过对各个新闻的标题和内容进行分析，将新闻分别归于“军事”、“经济”等类别，从而让对某一类别感兴趣的读者可以很方便地阅读该类别的新闻和文章。</p>
 <h2>功能列表</h2>
@@ -17,5 +18,5 @@
 <p style="text-indent:2em">我们选择了ASP.NET作为网站的开发语言和平台。从技术的角度来说，本网站的开发既可以使用JSP，也可以使用ASP，甚至也可以使用PHP等各种不同的语言，但考虑到ASP开发的快捷性、前后台交互的简便性，以及本小组的部分在自学ASP的组员需要一个实践练习的机会，我们最终选定ASP作为开发语言。</p>
 <h2>总体架构</h2>
 <p style="text-indent:2em">本次项目开发我们在迭代开发的每一个阶段都做到了严格的函数接口预定义和分层架构。</p>
-
+</div>
 </asp:Content>

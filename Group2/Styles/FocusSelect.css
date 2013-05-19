@@ -1,0 +1,27 @@
+﻿body {
+}
+
+.iLabel {
+    color: gray;
+}
+.mainContent {
+    margin:0 auto;
+    margin-top:-5px;
+    padding-left:160px;
+}
+fieldset {
+    width:400px;
+    border-radius:5px;
+    margin-left:100px;
+    margin-top:30px;
+}
+.left {
+    float:left;
+    clear:right;
+}
+.right {
+    float:right;
+}
+.smallright {
+    padding-right:125px;
+}

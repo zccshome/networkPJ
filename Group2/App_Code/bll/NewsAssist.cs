@@ -42,6 +42,9 @@ public class NewsAssist
      */
     public static List<Article> getArticleListOfCertainPrimaryGroup(GroupNode gn)
     {
+        PrimaryGroups pg = PrimaryGroupMananger.selectRecord(new PrimaryGroups(gn.Id, ""));
+        if (pg != null)
+            return ArticleManager.getArticleListByPrimaryGroup(pg);
         return null;
     }
 
@@ -54,7 +57,13 @@ public class NewsAssist
      */
     public static List<Article> getArticleListByDynamicSearch(GroupNode gn)
     {
-        return null;
+        Tag t = new Tag();
+        t.TagId = gn.Id;
+        t = TagManager.getTag(t);
+        string[] keys = t.TagKeys.Split(' ');
+        if (keys.Length == 1 && keys[0].Equals(""))
+            return null;
+        return Search.searchInPrimaryGroup(keys, t.GroupId);
     }
 
     /*
@@ -70,11 +79,165 @@ public class NewsAssist
      *          （4）利用getArticleListByDynamicSearch函数拿到在M下该用户关注的所有子分类和兴趣标签对应的文章的并集，记为R；
      *          （5）返回值为 Q - R
      *       2、如果第二个参数为null，比较简单，只需返回所有文章中没有被分到任何主分类的文章的列表即可
-     * 用途说明：当用户点击某个主分类下“其他”子分类或“其他”主分类查看该分类下所有文章时，此函数返回该分类所有文章的列表
+     * 用途说明：当用户点击某个主分类下“其他”子分类或“其他”主分类查看该分类下所有文章时，此函数返回该分类所有文章的s列表
      */
     public static List<Article> getArticleListOfOthers( int userId , GroupNode gn )
     {
-        return null;
+        if (gn != null)
+        {
+            // 1、如果第二个参数不为null：
+            PrimaryGroups pg = PrimaryGroupMananger.selectRecord(new PrimaryGroups(gn.PrimaryGroupId, ""));
+            if (pg == null)
+                return null;
+            List<Article> al = ArticleManager.getArticleListByPrimaryGroup(pg);
+            if (al == null)
+                return null;
+            User u = new User();
+            u.UserId = userId;
+            List<int> tagList = User2TagManager.getTagListByUserId(u);
+            if (tagList != null)
+            {
+                int tagListLength = tagList.Count;
+                for (int i = 0; i < tagListLength; i++)
+                {
+                    Tag t = new Tag();
+                    t.TagId = tagList[i];
+                    t = TagManager.getTag(t);
+                    if (t.TagName != "其他")
+                    {
+                        List<Article> articleListInTag = ArticleManager.getArticleListByDynamicSearch(t);
+                        if (articleListInTag != null)
+                        {
+                            int articleListInTagLength = articleListInTag.Count;
+                            for (int k = 0; k < articleListInTagLength; k++)
+                            {
+                                Article a = articleListInTag[k];
+                                int alLength = al.Count;
+                                for (int p = 0; p < alLength; p++)
+                                {
+                                    if (al[p].ArticleId == a.ArticleId)
+                                    {
+                                        al.RemoveAt(p);
+                                        alLength -= 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return al;
+        }
+        else 
+        {
+            // 2、如果第二个参数为null,只需返回所有文章中没有被分到任何主分类的文章的列表即可
+            List<Article> al = new List<Article>();
+
+            List<string[]> allPG = PrimaryGroupMananger.getAllGroups();
+            if (allPG != null)
+            {
+                for (int i = 0; i < allPG.Count; i++)
+                {
+                    PrimaryGroups pg = new PrimaryGroups();
+                    pg.GroupId = Convert.ToInt32(allPG[i][0]);
+                    pg.GroupName = allPG[i][1];
+                    List<Article> onePGAL = ArticleManager.getArticleListByPrimaryGroup(pg);
+                    if (onePGAL != null)
+                        for (int j = 0; j < onePGAL.Count; j++)
+                            al.Add(onePGAL[j]);
+                }
+            }
+
+            User u = new User();
+            u.UserId = userId;
+            List<int> tagList = User2TagManager.getTagListByUserId(u);
+            if (tagList != null)
+            {
+                int tagListLength = tagList.Count;
+                for (int i = 0; i < tagListLength; i++)
+                {
+                    Tag t = new Tag();
+                    t.TagId = tagList[i];
+                    t = TagManager.getTag(t);
+                  
+                    List<Article> articleListInTag = ArticleManager.getArticleListByDynamicSearch(t);
+                    if (articleListInTag != null)
+                    {
+                        int articleListInTagLength = articleListInTag.Count;
+                        for (int k = 0; k < articleListInTagLength; k++)
+                        {
+                            Article a = articleListInTag[k];
+                            int alLength = al.Count;
+                            for (int p = 0; p < alLength; p++)
+                            {
+                                if (al[p].ArticleId == a.ArticleId)
+                                {
+                                    al.RemoveAt(p);
+                                    alLength -= 1;
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+
+            return al;
+        }
+    }
+
+    public static List<Article> getArticleListOfOthersForNoLogin(int userId, GroupNode gn)
+    {
+        if (gn != null)
+        {
+            // 1、如果第二个参数不为null：
+            PrimaryGroups pg = PrimaryGroupMananger.selectRecord(new PrimaryGroups(gn.PrimaryGroupId, ""));
+            if (pg == null)
+                return null;
+            List<Article> al = ArticleManager.getArticleListByPrimaryGroup(pg);
+            if (al == null)
+                return null;
+            List<Tag> tagList = TagManager.getAllTagsByCertainGroupId(pg.GroupId);
+            if (tagList != null)
+            {
+                int tagListLength = tagList.Count;
+                for (int i = 0; i < tagListLength; i++)
+                {
+                    Tag t = tagList[i];
+                    if (t.TagName != "其他")
+                    {
+                        List<Article> articleListInTag = ArticleManager.getArticleListByDynamicSearch(t);
+                        if (articleListInTag != null)
+                        {
+                            int articleListInTagLength = articleListInTag.Count;
+                            for (int k = 0; k < articleListInTagLength; k++)
+                            {
+                                Article a = articleListInTag[k];
+                                int alLength = al.Count;
+                                for (int p = 0; p < alLength; p++)
+                                {
+                                    if (al[p].ArticleId == a.ArticleId)
+                                    {
+                                        al.RemoveAt(p);
+                                        alLength -= 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return al;
+        }
+        else
+        {
+            // 2、如果第二个参数为null,只需返回所有文章中没有被分到任何主分类的文章的列表即可
+            PrimaryGroups pg = new PrimaryGroups();
+            pg.GroupId = 0; // 其它主分类的 id 为 0
+            return ArticleManager.getArticleListByPrimaryGroup(pg);
+        }
     }
 
     /**
@@ -85,7 +248,10 @@ public class NewsAssist
      */
     public static Article getArticleByIdWrapper(int articleId)
     {
-        return null;
+        Article a = new Article();
+        a.ArticleId = articleId;
+
+        return ArticleManager.selectRecordByArticleId(a);
     }
 
     /*
@@ -96,7 +262,35 @@ public class NewsAssist
      */
     public static string getArticleContentByArticleModel(Article a)
     {
-        return null;
+        string dirPath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "App_Data\\Articles";
+        if (Directory.Exists(dirPath))
+        {
+            try
+            {
+                string result = "";
+
+                StreamReader objReader = new StreamReader(dirPath + a.FileURL, Encoding.GetEncoding("UTF-8"));
+                if (objReader != null)
+                {
+                    string line = ""; // objReader.ReadLine(); // 第一行读到的是标题，不要它，只要内容
+                    //line = objReader.ReadLine();
+                    while (line != null)
+                    {
+                        result += line + "<br />";
+                        line = objReader.ReadLine();
+                    }
+                    objReader.Close();
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+
+        }
+        return null;    // 文件找不到的时候，直接返回 null
     }
 
 }

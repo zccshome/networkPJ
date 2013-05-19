@@ -39,7 +39,21 @@ public class GroupQuery
      */
     public static List<GroupNode> getAllPrimaryGroups()
     {
-        return null;
+        List<GroupNode> groupNodeList = new List<GroupNode>();
+        List<string[]> groupListStrings = PrimaryGroupMananger.getAllGroups();
+        foreach(String[] tempString in groupListStrings)
+        {
+            int groupID = Int32.Parse(tempString[0]);
+            String groupName = tempString[1];
+            GroupNode groupNode = new GroupNode();
+            groupNode.Id = groupID;
+            groupNode.IsPrimaryGroup = true;
+            groupNode.IsInterestLabel = false;
+            groupNode.NodeName = groupName;
+            groupNode.PrimaryGroupId = groupID;
+            groupNodeList.Add(groupNode);
+        }
+        return groupNodeList;
     }
 
     /**
@@ -50,18 +64,70 @@ public class GroupQuery
      */
     public static List<GroupNode> getAllSecondaryGroups()
     {
-        return null;
+        List<GroupNode> tagNodeList = new List<GroupNode>();
+        List<string[]> groupListStrings = PrimaryGroupMananger.getAllGroups();
+        foreach (String[] tempString in groupListStrings)
+        {
+            int groupID = Int32.Parse(tempString[0]);
+            List<Tag> tagListStrings = TagManager.getAllTagsByCertainGroupId(groupID);
+            if (tagListStrings == null)
+                continue ;
+            foreach (Tag tag in tagListStrings)
+            {
+                if (tag.IsPrivate == 1)
+                    continue;
+                GroupNode groupNode = new GroupNode();
+                groupNode.Id = tag.TagId;
+                groupNode.IsPrimaryGroup = false;
+                groupNode.IsInterestLabel = false;
+                groupNode.NodeName = tag.TagName;
+                groupNode.PrimaryGroupId = groupID;
+                tagNodeList.Add(groupNode);
+            }
+        }
+        return tagNodeList;
     }
 
     /**
      * 输入：指定用户的userId
      * 输出：该用户关注的所有公共分类（主分类+子分类）的列表
      * 功能：获取所有主分类的所有子分类的列表
-     * 注意：返回的结果中包括主分类下的各个“其他”子分类。
+     * 注意：返回的结果中包括主分类下的各个“其他”子分类，额外地，还要通过各个“其他”子分类还原出用户关注的主分类，并添加到结果列表中。
      */
     public static List<GroupNode> getFocusedPublicGroupsByUserId(int userId)
     {
-        return null;
+        List<GroupNode> focusedPublicGroupList = new List<GroupNode>();
+        User user = new User(userId,"","","");
+        List<int> tagIdList = User2TagManager.getTagListByUserId(user);
+        List<Tag> tagList = TagManager.getTagsByIdList(tagIdList);
+        if (tagList == null)
+            return null;
+        foreach (Tag tag in tagList)
+        {
+            if (tag.IsPrivate == 1)
+                continue;
+            GroupNode groupNode = new GroupNode();
+            groupNode.Id = tag.TagId;
+            groupNode.IsPrimaryGroup = false;
+            groupNode.IsInterestLabel = false;
+            groupNode.NodeName = tag.TagName;
+            groupNode.PrimaryGroupId = tag.GroupId;
+            focusedPublicGroupList.Add(groupNode);
+            if (tag.TagName.Equals("其他"))
+            {
+                GroupNode groupNode2 = new GroupNode();
+                groupNode2.Id = tag.GroupId;
+                groupNode2.IsPrimaryGroup = true;
+                groupNode2.IsInterestLabel = false;
+                PrimaryGroups primaryGroup = new PrimaryGroups();
+                primaryGroup.GroupId = tag.GroupId;
+                primaryGroup = PrimaryGroupMananger.selectRecord(primaryGroup);
+                groupNode2.NodeName = primaryGroup.GroupName;
+                groupNode2.PrimaryGroupId = tag.GroupId;
+                focusedPublicGroupList.Add(groupNode2);
+            }
+        }
+        return focusedPublicGroupList;
     }
 
     /**
@@ -71,7 +137,25 @@ public class GroupQuery
      */
     public static List<GroupNode> getAllInterestLabelsByUserId(int userId)
     {
-        return null;
+        List<GroupNode> tagGroupList = new List<GroupNode>();
+        User user = new User(userId,"","","");
+        List<int> tagIdList = User2TagManager.getTagListByUserId(user);
+        List<Tag> tagList = TagManager.getTagsByIdList(tagIdList);
+        if (tagList == null)
+            return null;
+        foreach (Tag tag in tagList)
+        {
+            if (tag.IsPrivate == 0)
+                continue;
+            GroupNode groupNode = new GroupNode();
+            groupNode.Id = tag.TagId;
+            groupNode.IsPrimaryGroup = false;
+            groupNode.IsInterestLabel = true;
+            groupNode.NodeName = tag.TagName;
+            groupNode.PrimaryGroupId = tag.GroupId;
+            tagGroupList.Add(groupNode);
+        }
+        return tagGroupList;
     }
 
     /**
@@ -83,6 +167,54 @@ public class GroupQuery
      */
     public static List<GroupNode> sortGroupNodeList(List<GroupNode>[] gnl)
     {
-        return null;
+        List<GroupNode> returnList = new List<GroupNode>();
+        List<GroupNode> returnList2 = new List<GroupNode>();
+        int length = gnl.GetLength(0);
+        while (length > 0 )
+        {
+            List<GroupNode> tempList = gnl[length - 1];
+            if (tempList == null)
+            {
+                length--;
+                continue;
+            }
+            foreach (GroupNode g in tempList)
+            {
+                bool isDouble = false;
+                foreach (GroupNode h in returnList)
+                {
+                    if (GroupNodeComparer.equals(g, h))
+                        isDouble = true;
+                }
+                if (!isDouble)
+                    returnList2.Add(g);
+            }
+            returnList = returnList.Union(returnList2).ToList();
+            length -= 1;
+        }
+        returnList.Sort();
+        return returnList;
+    }
+    public static void test()
+    {
+        List<GroupNode> tempList = new List<GroupNode>();
+        GroupNode g1 = new GroupNode("a", 0, true, 5, false);
+        GroupNode g2 = new GroupNode("b", 0, false, 2, false);
+        GroupNode g3 = new GroupNode("c", 0, false, 1, false);
+        GroupNode g4 = new GroupNode("d", 1, false, 3, false);
+        GroupNode g5 = new GroupNode("e", 1, true, 1, false);
+        GroupNode g6 = new GroupNode("f", 0, false, 4, false);
+        GroupNode g7 = new GroupNode("g", 1, false, 0, false);
+        tempList.Add(g1);
+        tempList.Add(g2);
+        tempList.Add(g3);
+        tempList.Add(g4);
+        tempList.Add(g5);
+        tempList.Add(g6);
+        tempList.Add(g7);
+        tempList.Sort();
+        String df = "";
+        foreach (GroupNode wu in tempList)
+            df = df + wu.PrimaryGroupId + wu.Id;
     }
 }

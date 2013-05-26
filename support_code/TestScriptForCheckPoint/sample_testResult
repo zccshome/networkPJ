@@ -1,0 +1,29 @@
+[arieshout@localhost ~/network_pro1/TestScriptForCheckPoint ] # ruby checkpoint.rb 20102
+Server address - 127.0.0.1:20102
+
+////// ECHO_SINGLE_USER \\\\\\
+--> This is the first test. Only one user
+<-- This is the first test. Only one user
+(+) ECHO_SINGLE_USER passed
+
+////// ECHO_TWO_USERS \\\\\\
+--> This is the second test. Two users echo. I am xil
+--> This is the second test. Two users echo. I am xzhang
+<-- This is the second test. Two users echo. I am xzhang
+(+) ECHO_TWO_USERS passed
+<-- This is the second test. Two users echo. I am xil
+(+) ECHO_TWO_USERS passed
+
+////// ECHO_THREE_USERS \\\\\\
+--> This is the third test Three users echo I am xil
+--> This is the third test Three users echo I am xzhang
+--> This is the third test Three users echo I am dan
+<-- This is the third test Three users echo I am dan
+(+) ECHO_THREE_USERS passed
+<-- This is the third test Three users echo I am xzhang
+(+) ECHO_THREE_USERS passed
+<-- This is the third test Three users echo I am xil
+(+) ECHO_THREE_USERS passed
+
+Your score: 10 / 10
+Remember to commit code into WORK_UPLOAD/Project_1/YOUR_STUDENT_ID/checkpoint1

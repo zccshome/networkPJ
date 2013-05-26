@@ -1,0 +1,76 @@
+# p1.multiple.sample
+# A sample testfile for use with tester.py
+#
+# To run this testfile, type the command:
+# python tester.py --server=<servername> --port=<port> p1.multiple.sample
+
+# When the interpreter runs, it will automatically replace all
+# instances of $server with your servername, and all instances of
+# $port with your port name.  You can specify any variable you want.
+# For example, if you run:
+#
+# python tester.py --key=<value> p1.multiple.sample
+#
+# The interpreter will replace all instances of "$key" with "value".
+
+# Connect to the server using the command "connect".  The first value
+# in the line is the user running the command.  Each user maintains
+# his own socket connection.
+
+user1 connect $server:$port
+user2 connect $server:$port
+user3 connect $server:$port
+
+# Send data along the socket using the command "send".  The server
+# will perceive that the data is received from 3 different clients.
+# All data will be automatically suffixed with \r\n.
+
+user1 send NICK nickname
+user2 send USER username hostname servername :Real Name
+user3 send USER brokendata :Not enough parameters
+
+# Use match to check if the return value from the server matches a
+# certain regular expression.
+
+user1 send USER username hostname servername :Real Name
+user1 match 375
+
+# Use recv to check the return value manually, by outputting it to the
+# terminal (stdout).
+
+user1 send LIST
+user1 recv 
+
+# Mimic delay in sending packets by setting parameters.  Use
+# autonewline to not automatically append \r\n on the end of each
+# send.  This command should be valid, even though it is received in
+# two parts.
+
+user2 unset autonewline
+user2 send NI
+user2 sleep 1
+user2 send CK nickname2\r\n
+user2 match 375
+user2 set autonewline
+
+# After user1 sends the above command, he should now be registered.
+# If all goes to plan, the MOTD should be printed to stdout.  Verify
+# that the output is correct with either scripting, or visually
+# (preferrably using an automated script.)
+
+# Once you are done, close the connection with the server.
+
+user1 close
+user2 close
+user3 close
+
+# Available commands:
+#
+# connect <hostname>[:port]     - connect to the hostname[:port] given
+# send <message>                - send the data immediately after the break
+# set (autonewline|autoflush)   - set autonewline or autoflush
+# unset (autonewline|autoflush) - unset autonewline or autoflush
+# recv                          - force recv() from server and print data to screen
+# flush                         - if autoflush is unset, send queued data
+# sleep <x>                     - block for x seconds
+# close                         - close connection to the server
